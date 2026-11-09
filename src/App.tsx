@@ -1,5 +1,5 @@
-import './App.css'
 
+import './App.css'
 import React, { useEffect, useState } from 'react'
 import { useData } from './Store/Zustand'
 import { useForm } from 'react-hook-form'
@@ -17,7 +17,6 @@ function App() {
     getUsers()
   }, [])
 
-  // ADD + EDIT
   let submit = async (data) => {
     let formData = new FormData()
 
@@ -39,7 +38,6 @@ function App() {
     setOpen(false)
   }
 
-  // OPEN EDIT
   let handleEdit = (user) => {
     setEditingUser(user)
 
@@ -51,7 +49,6 @@ function App() {
     setOpen(true)
   }
 
-  // CLOSE DIALOG
   let closeDialog = () => {
     setOpen(false)
     setEditingUser(null)
@@ -61,87 +58,105 @@ function App() {
   return (
     <div className="container">
 
-      <h1>My To-Do List</h1>
+      <header className="header">
+        <div>
+          <h1>My To-Do List</h1>
+          <p>Manage your tasks in one place.</p>
+        </div>
 
-      <button onClick={() => {
-        setEditingUser(null)
-        reset()
-        setOpen(true)
-      }}>
-        ADD
-      </button>
+        <button className="add-btn" onClick={() => {
+          setEditingUser(null)
+          reset()
+          setOpen(true)
+        }}>
+          + Add Task
+        </button>
+      </header>
 
-      {/* DIALOG */}
       {open && (
         <div className="dialog">
 
-          <form onSubmit={handleSubmit(submit)}>
+          <form className="dialog-content" onSubmit={handleSubmit(submit)}>
 
-            <h2>{editingUser ? "Edit To-Do" : "Add To-Do"}</h2>
+            <div className="dialog-header">
+              <h2>{editingUser ? "Edit To-Do" : "Create To-Do"}</h2>
+              <p>Enter your task information below.</p>
+            </div>
 
+            <label>Name</label>
             <input
               {...register("name")}
-              placeholder="Name"
+              placeholder="Enter task name"
+              required
             />
 
-            <input
+            <label>Description</label>
+            <textarea
               {...register("description")}
-              placeholder="Description"
+              placeholder="Enter description"
+              required
             />
 
+            <label>Image</label>
             <input
+              className="file-input"
               type="file"
               accept="image/*"
               {...register("image")}
             />
 
-            <button type="submit">
-              Save
-            </button>
+            <div className="form-actions">
+              <button type="button" className="cancel-btn" onClick={closeDialog}>
+                Cancel
+              </button>
 
-            <button
-              type="button"
-              onClick={closeDialog}
-            >
-              Cancel
-            </button>
+              <button type="submit" className="save-btn">
+                {editingUser ? "Save changes" : "Create task"}
+              </button>
+            </div>
 
           </form>
         </div>
       )}
 
-      {/* USERS */}
-      {users.map((user) => (
-        <div className="card" key={user.id}>
+      <div className="users">
 
-          <h1>{user.name}</h1>
+        {users.map((user) => (
+          <div className="card" key={user.id}>
 
-          <p>{user.description}</p>
+            {user.images?.map((image) => (
+              <img
+                className="task-image"
+                key={image.id}
+                src={`https://to-dos-api.softclub.tj/images/${image.imageName}`}
+                alt={user.name}
+              />
+            ))}
 
-          {user.images?.map((image) => (
-            <img
-              key={image.id}
-              src={`https://to-dos-api.softclub.tj/images/${image.imageName}`}
-              alt={user.name}
-              width="150"
-            />
-          ))}
+            <div className="card-content">
+              <h2>{user.name}</h2>
+              <p>{user.description}</p>
 
-          <button onClick={() => deleteUser(user.id)}>
-            Delete
-          </button>
+              <div className="card-actions">
+                <button className="delete-btn" onClick={() => deleteUser(user.id)}>
+                  Delete
+                </button>
 
-          <button onClick={() => handleEdit(user)}>
-            Edit
-          </button>
+                <button className="edit-btn" onClick={() => handleEdit(user)}>
+                  Edit
+                </button>
+              </div>
+            </div>
 
-        </div>
-      ))}
-      <Jotai></Jotai>
+          </div>
+        ))}
+
+      </div>
+
+      <Jotai />
+
     </div>
   )
-}
-
-
+} 
 
 export default App

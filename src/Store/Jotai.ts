@@ -1,14 +1,14 @@
 import axios from "axios";
 import { atom } from "jotai";
 
-// Тип пользователя
+
 type User = {
     id: number;
     name: string;
     description: string;
 };
 
-// ХРАНЕНИЕ
+
 export let usersAtom = atom<User[]>([]);
 
 // GET
